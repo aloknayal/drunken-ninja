@@ -1,0 +1,83 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+#div1 {width:350px;height:70px;padding:10px;border:1px solid #aaaaaa;}
+</style>
+<script src="js/jquery-1.7.min.js"></script>
+<script src="js/modernizr.custom.34982.js"></script>
+
+<script src="js/application.js"></script>
+<script src="js/signatureCapture.js"></script>
+
+<script>
+var state;
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    
+    //ev.target.appendChild(document.getElementById(data));
+    createWidget(data,ev.target)
+	
+}
+
+function createWidget(data,target){
+	
+	if(data=="text"){
+		$("<input type='text' id='ip_"+data+"'/>").appendTo(target);
+	}else if(data=="sign"){
+		$("<canvas id='ip_"+data+"'' width='200' height='100' style='border:1px solid #000000;''/>").appendTo(target);
+	}
+	
+	var e=new Object();
+	e.target=target.id;
+	e.value="ip_"+data;
+	e.type=data;
+	state.push(e);
+}
+
+$(document).ready(function(e) {
+	state=new Array();
+	//sigCapture = new SignatureCapture( "myCanvas" );
+	
+	//$("#submit").click( onSubmitClick );
+	//$("#cancel").click( onCancelClick );
+	$("#menu").load("menu.html");
+	$("#docContent").load("test2.html");
+	$("#save").click(function(){
+		$.ajax({
+			
+			url: "prep",
+			type:"POST",
+			data: "a="+JSON.stringify(state)
+		});
+	});
+});
+
+
+</script>
+</head>
+<body>
+
+
+
+<br>
+<div style="display:table">
+<div id="menu"></div>
+<div style="display:table-cell">&nbsp;&nbsp;</div>
+<div id="docContent" style="display:table-cell" ondrop="drop(event)" ondragover="allowDrop(event)">
+</div>
+</div>
+
+<div><input id="save" type="button" value="save">
+</div>
+</body>
+</html>

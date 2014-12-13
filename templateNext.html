@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+#div1 {width:350px;height:70px;padding:10px;border:1px solid #aaaaaa;}
+</style>
+<script src="js/jquery-1.7.min.js"></script>
+<script src="js/jquery/jquery-ui.js"></script>
+<script src="js/modernizr.custom.34982.js"></script>
+
+<script src="js/application.js"></script>
+<script src="js/signatureCapture.js"></script>
+
+<script>
+var state;
+
+
+function createWidget(data,target){
+	
+	if(data.draggable.attr('id')=="text"){
+		var id=Math.floor((Math.random() * 100) + 1);
+		
+		$("<div id='div_text"+id+"'>").appendTo(target);
+		$("#div_text"+id).css({"top":data.offset.top, "left":data.offset.left,"position":"absolute"} );
+		//$("<div id='div_text'>").css("position:absolute");
+		$("<input type='text' id='ip_text'"+id+"'/>").appendTo($("#div_text"+id));
+		
+	}else if(data=="sign"){
+		$("<canvas id='ip_"+data+"'' width='200' height='100' style='border:1px solid #000000;''/>").appendTo(target);
+	}
+	
+}
+
+$(document).ready(function(e) {
+	state={};
+	//sigCapture = new SignatureCapture( "myCanvas" );
+	
+	//$("#submit").click( onSubmitClick );
+	//$("#cancel").click( onCancelClick );
+	$("#menu").load("menu.html");
+	
+	$("#docContent").droppable({
+    drop: function(event,ui){
+		createWidget(ui,this)
+	}
+});
+
+
+
+});
+</script>
+</head>
+<body>
+
+
+
+<br>
+<div style="display:table">
+<div id="menu" style="position:fixed"></div>
+<div style="display:table-cell">&nbsp;&nbsp;</div>
+<div id="docContent" style="display:table-cell" >
+	<img src="./test.png" >
+</div>
+</div>
+
+<div><input type="button" label="Save"/>
+</div>
+</body>
+</html>

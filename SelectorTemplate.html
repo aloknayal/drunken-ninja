@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+#div1 {width:350px;height:70px;padding:10px;border:1px solid #aaaaaa;}
+</style>
+<script src="js/jquery-1.7.min.js"></script>
+<script src="js/jquery/jquery-ui.js"></script>
+<script src="js/modernizr.custom.34982.js"></script>
+
+<script src="js/application.js"></script>
+<script src="js/signatureCapture.js"></script>
+<link rel="stylesheet" href="js/jquery/jquery-ui.css">
+<script>
+
+$(document).ready(function(e) {
+	state=new Array();
+	//sigCapture = new SignatureCapture( "myCanvas" );
+	
+	//$("#submit").click( onSubmitClick );
+	//$("#cancel").click( onCancelClick );
+//	$("#menu").load("menu.html");
+	$("#docContent").load("test4.html");
+	$("#repmenu").toggle();
+	$("#save").click(function(){
+		$.ajax({
+			
+			url: "prep",
+			type:"POST",
+			contentType:"multipart/form-data",
+			data: "a="+encodeURI($("#docContent").html())
+		});
+	});
+});
+
+$(document).mousedown(function(event){
+	
+	if(event.which==3){
+		$("#repmenu").dialog({
+      autoOpen: true,
+      height: 200,
+      width: 350,
+      modal: false,
+    });
+	//$("#repmenu").toggle();
+	}
+	
+});
+
+
+function replaceSelection(html, selectInserted) {
+    var sel, range, fragment;
+
+    if (typeof window.getSelection != "undefined") {
+        // IE 9 and other non-IE browsers
+        sel = window.getSelection();
+
+        // Test that the Selection object contains at least one Range
+        if (sel.getRangeAt && sel.rangeCount) {
+            // Get the first Range (only Firefox supports more than one)
+            range = window.getSelection().getRangeAt(0);
+            range.deleteContents();
+
+            // Create a DocumentFragment to insert and populate it with HTML
+            // Need to test for the existence of range.createContextualFragment
+            // because it's non-standard and IE 9 does not support it
+            if (range.createContextualFragment) {
+                fragment = range.createContextualFragment(html);
+            } else {
+                // In IE 9 we need to use innerHTML of a temporary element
+                var div = document.createElement("div"), child;
+                div.innerHTML = html;
+                fragment = document.createDocumentFragment();
+                while ( (child = div.firstChild) ) {
+                    fragment.appendChild(child);
+                }
+            }
+            var firstInsertedNode = fragment.firstChild;
+            var lastInsertedNode = fragment.lastChild;
+            range.insertNode(fragment);
+            if (selectInserted) {
+                if (firstInsertedNode) {
+                    range.setStartBefore(firstInsertedNode);
+                    range.setEndAfter(lastInsertedNode);
+                }
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        }
+    } else if (document.selection && document.selection.type != "Control") {
+        // IE 8 and below
+        range = document.selection.createRange();
+        range.pasteHTML(html);
+    }
+}
+
+function getRange(){
+	var  range,sel, container;
+    if (document.selection) {
+        range = document.selection.createRange();
+        range.collapse(isStart);
+        return range.parentElement();
+    } else {
+        sel = window.getSelection();
+        if (sel.getRangeAt) {
+            if (sel.rangeCount > 0) {
+                range = sel.getRangeAt(0);
+            }
+        } else {
+            // Old WebKit
+            range = document.createRange();
+            range.setStart(sel.anchorNode, sel.anchorOffset);
+            range.setEnd(sel.focusNode, sel.focusOffset);
+
+            // Handle the case when the selection was selected backwards (from the end to the start in the document)
+            if (range.collapsed !== sel.isCollapsed) {
+                range.setStart(sel.focusNode, sel.focusOffset);
+                range.setEnd(sel.anchorNode, sel.anchorOffset);
+            }
+       }
+    }
+	return range;
+}
+
+function getSelectionBoundaryElement(isStart) {
+    	var range=getRange();
+        if (range) {
+           container = range[isStart ? "startContainer" : "endContainer"];
+
+           // Check if the container is a text node and return its parent if so
+           return container.nodeType === 3 ? container.parentNode : container;
+        }   
+ }
+ 
+ function insertItem(option){
+	if(option=='text'){
+		var html="<input id='text_1' />"
+		
+		replaceSelection(html,true);
+	}else if(option='canvas'){
+	var html="<canvas id='canvas_1'' width='200' height='100' style='border:1px solid #000000;''/>";
+	replaceSelection(html,true);
+	}
+ }
+
+</script>
+</head>
+<body>
+
+
+
+<br>
+<div id="repmenu">
+<label>menu </label>
+ <div><a  href="javascript:insertItem('text')">Text</a></div> <br/>
+ <div><a href="javascript:insertItem('canvas')">Sign</a></div> 	
+</div>
+
+<div style="display:table">
+
+<div style="display:table-cell">&nbsp;&nbsp;</div>
+<div id="docContent" style="display:table-cell" ondrop="drop(event)" ondragover="allowDrop(event)">
+</div>
+</div>
+
+<div><input id="save" type="button" value="save">
+</div>
+</body>
+</html>

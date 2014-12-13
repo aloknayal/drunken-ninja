@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<style>
+#div1 {width:350px;height:70px;padding:10px;border:1px solid #aaaaaa;}
+</style>
+<script src="js/jquery-1.7.min.js"></script>
+<script src="js/modernizr.custom.34982.js"></script>
+<script src="js/application.js"></script>
+<script src="js/signatureCapture.js"></script>
+
+<script>
+
+$(document).ready(function(e) {
+	state=new Array();
+	//sigCapture = new SignatureCapture( "myCanvas" );
+	$("#docContent").load("test2.html");
+		$.ajax({
+			
+			url: "prep",
+			type:"GET",
+			success: function(data){
+				var config=JSON.parse(data);	
+				for(var i=0;i<config.length;i++){
+					if(config[i].type=="text"){
+						$("#"+config[i].target).replaceWith("<input type='text' id='"+config[i].value+"' />");
+					}else if(config[i].type=="sign"){
+						$("#"+config[i].target).replaceWith("<canvas id='"+config[i].value+"' width='200' height='100' style='border:1px solid #000000;'' />");
+						sigCapture = new SignatureCapture(config[i].value);
+					}
+				}
+			}
+		});
+});
+
+
+</script>
+</head>
+<body>
+
+
+
+<br>
+<div style="display:table">
+<div id="menu"></div>
+<div style="display:table-cell">&nbsp;&nbsp;</div>
+<div id="docContent">
+</div>
+</div>
+</body>
+</html>
